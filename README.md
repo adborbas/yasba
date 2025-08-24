@@ -1,5 +1,7 @@
 # Yet Another Sieve Builder App (Yasba)
 
+TEST
+
 **Yasba** is a macOS SwiftUI application for visually building [Sieve](https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)) mail filter scripts.
 
 It provides a user-friendly editor for creating complex email filtering rules without needing to manually write Sieve code.
