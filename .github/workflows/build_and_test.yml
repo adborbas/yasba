@@ -1,0 +1,84 @@
+name: macOS CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+env:
+  SCHEME: Yasba
+  PROJECT: Source/Yasba.xcodeproj
+  DESTINATION: platform=macOS,arch=arm64
+  CONFIGURATION: Debug
+  RESULT_BUNDLE: TestResults.xcresult
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+
+    strategy:
+      matrix:
+        xcode: [ "16.1" ]
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode ${{ matrix.xcode }}
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode }}
+
+      # Cache SwiftPM (works for both xcodebuild + SwiftPM)
+      - name: Cache SwiftPM
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/.swiftpm
+            ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: ${{ runner.os }}-spm-
+
+      # Resolve dependencies explicitly (good for cache priming)
+      - name: Resolve SwiftPM dependencies
+        run: |
+          if [ -n "${WORKSPACE}" ]; then
+            xcodebuild -resolvePackageDependencies -workspace "${WORKSPACE}" -scheme "${SCHEME}"
+          else
+            xcodebuild -resolvePackageDependencies -project "${PROJECT}" -scheme "${SCHEME}"
+          fi
+
+      - name: Build (no signing)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project "${PROJECT}" \
+            -scheme "${SCHEME}" \
+            -configuration "${CONFIGURATION}" \
+            -destination "${DESTINATION}" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Test (with coverage)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project "${PROJECT}" \
+            -scheme "${SCHEME}" \
+            -configuration "${CONFIGURATION}" \
+            -destination "${DESTINATION}" \
+            -resultBundlePath "${RESULT_BUNDLE}" \
+            CODE_SIGNING_ALLOWED=NO \
+            test
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xcode-${{ matrix.xcode }}-results
+          path: |
+            ${RESULT_BUNDLE}
+            coverage.txt
+            coverage.json
