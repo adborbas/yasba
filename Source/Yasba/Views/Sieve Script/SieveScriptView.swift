@@ -2,7 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SieveScriptView: View {
-    @Binding private var viewModel: SieveScriptViewModel
+    @ObservedObject private var viewModel: SieveScriptViewModel
     @State private var draggedRange: Range<Int>? = nil
     @State private var dropGapIndex: Int? = nil
     @State private var rowHeights: [Int: CGFloat] = [:]
@@ -11,6 +11,10 @@ struct SieveScriptView: View {
     
     var tokens: [RowToken] { viewModel.rowTokens }
     var indents: [Int] { viewModel.indentation(for: tokens) }
+    
+    init(viewModel: SieveScriptViewModel) {
+        self.viewModel = viewModel
+    }
     
     var filteredIndices: [Int] {
         if let span = draggedRange { return Array(tokens.indices).filter { !span.contains($0) } }
@@ -29,22 +33,52 @@ struct SieveScriptView: View {
         return CGFloat(indents.last ?? 0) * 24
     }
 
-    init(viewModel: Binding<SieveScriptViewModel>) {
-        self._viewModel = viewModel
-    }
-
     var body: some View {
         ZStack(alignment: .center) {
             HStack {
                 Spacer()
-                scriptList
-                    .frame(maxWidth: 1000)
+                if viewModel.rowTokens.isEmpty {
+                    emptyDropArea
+                        .frame(maxWidth: 1000)
+                } else {
+                    scriptList
+                        .frame(maxWidth: 1000)
+                }
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+    
+    @ViewBuilder
+        private var emptyDropArea: some View {
+            VStack(spacing: 12) {
+                if dropGapIndex != nil || draggedRange != nil {
+                    PlaceholderRowView()
+                        .padding(.leading, 0)
+                        .transition(.opacity)
+                } else {
+                    Text("Drag a command from the sidebar to start writing your script.")
+                        .font(.title2)
+                        .foregroundStyle(Color.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 24)
+                }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .contentShape(Rectangle())
+            .onDrop(
+                of: [UTType.utf8PlainText],
+                delegate: UnifiedDropDelegate(
+                    target: .fixedGap(0),
+                    draggedRange: $draggedRange,
+                    dropGapIndex: $dropGapIndex,
+                    rowHeights: $rowHeights,
+                    viewModel: viewModel
+                )
+            )
+        }
 
     @ViewBuilder
     var scriptList: some View {
@@ -151,7 +185,32 @@ struct SieveScriptView: View {
     }
 }
 
-#Preview {
+#Preview("Not empty") {
+    @Previewable @State var viewModel = SieveScriptViewModel(script: [
+        AddFlagCommand(tag: "Spam"),
+        IfCommand(
+            quantifier: .any,
+            tests: [
+                .header(["from"], match: .contains, keys: ["noreply@dpd.hu"]),
+                .exists(["x-marked-spam"])
+            ],
+            thenChildren: [
+                AddFlagCommand(tag: "Label 1"),
+                AddFlagCommand(tag: "Label 2")
+            ],
+            elseChildren: [
+                AddFlagCommand(tag: "Tag 1")
+            ]
+        ),
+        FileIntoCommand(mailbox: "Social"),
+        AddFlagCommand(tag: "Tag 1"),
+        AddFlagCommand(tag: "Tag 2"),
+        StopCommand()
+    ])
+    SieveScriptView(viewModel: viewModel)
+}
+
+#Preview("Empty") {
     @Previewable @State var viewModel = SieveScriptViewModel()
-    SieveScriptView(viewModel: $viewModel)
+    SieveScriptView(viewModel: viewModel)
 }

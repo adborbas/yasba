@@ -7,10 +7,11 @@ import AppKit
 // MARK: - Root
 
 struct SieveScriptBuilderView: View {
-    @State var model: SieveScriptViewModel
+    @StateObject var model: SieveScriptViewModel
     @State private var libraryWidth: CGFloat = 320
     @State private var shouldPresentSheet = false
     @State private var renderedScriptText: String = ""
+    @State private var shouldShowClearConfirmation = false
 
     var body: some View {
         HSplitView {
@@ -18,13 +19,9 @@ struct SieveScriptBuilderView: View {
                 Color.primary.colorInvert()
                     .ignoresSafeArea()
                 
-                Toolbar() {
-                    renderedScriptText = model.render()
-                    shouldPresentSheet = true
-                }
-                .ignoresSafeArea()
+                toolbar
 
-                SieveScriptView(viewModel: $model)
+                SieveScriptView(viewModel: model)
                     .padding([.leading, .top], 24)
                     .frame(minWidth: 420,
                            maxWidth: .infinity,
@@ -49,27 +46,65 @@ struct SieveScriptBuilderView: View {
         } content: {
             RenderedSieveScriptView(scriptText: $renderedScriptText)
         }
+        .alert("Clear Script?", isPresented: $shouldShowClearConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Clear", role: .destructive) {
+                model.clear()
+            }
+        } message: {
+            Text("This will remove all commands from the script. This action cannot be undone.")
+        }
+    }
+    
+    @ViewBuilder
+    private var toolbar: some View {
+        Toolbar {
+            if !model.rowTokens.isEmpty {
+                ToolbarButton(icon: "trash") {
+                    shouldShowClearConfirmation = true
+                }
+            }
+            ToolbarButton(icon: "note.text") {
+                renderedScriptText = model.render()
+                shouldPresentSheet = true
+            }
+        }
+        .ignoresSafeArea()
     }
 }
 
-private struct Toolbar: View {
-    var onRender: (() -> Void)
+private struct Toolbar<Content: View>: View {
+    var content: Content
+    
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
     
     var body: some View {
-        HStack {
+        HStack(spacing: 32) {
             Spacer()
-            Button {
-                onRender()
-            } label: {
-                Image(systemName: "note.text")
-                    .resizable()
-                    .frame(width: 18, height: 18)
-            }
-            .buttonStyle(.plain)
-
+            content
         }
         .padding(.trailing, 24)
         .frame(height: 50)
+    }
+}
+
+private struct ToolbarButton: View {
+    private let size: CGFloat = 22
+    
+    let icon: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Image(systemName: icon)
+                .resizable()
+                .frame(width: size, height: size)
+        }
+        .buttonStyle(.plain)
     }
 }
 
