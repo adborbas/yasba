@@ -11,6 +11,7 @@ struct SieveScriptBuilderView: View {
     @State private var libraryWidth: CGFloat = 320
     @State private var shouldPresentSheet = false
     @State private var renderedScriptText: String = ""
+    @State private var shouldShowClearConfirmation = false
 
     var body: some View {
         HSplitView {
@@ -23,7 +24,7 @@ struct SieveScriptBuilderView: View {
                         renderedScriptText = model.render()
                         shouldPresentSheet = true
                     }, onNew: {
-                        model.clear()
+                        shouldShowClearConfirmation = true
                     })
                 .ignoresSafeArea()
 
@@ -51,6 +52,14 @@ struct SieveScriptBuilderView: View {
             
         } content: {
             RenderedSieveScriptView(scriptText: $renderedScriptText)
+        }
+        .alert("Clear Script?", isPresented: $shouldShowClearConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Clear", role: .destructive) {
+                model.clear()
+            }
+        } message: {
+            Text("This will remove all commands from the script. This action cannot be undone.")
         }
     }
 }
