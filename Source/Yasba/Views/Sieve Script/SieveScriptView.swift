@@ -2,7 +2,7 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct SieveScriptView: View {
-    @Binding private var viewModel: SieveScriptViewModel
+    @ObservedObject private var viewModel: SieveScriptViewModel
     @State private var draggedRange: Range<Int>? = nil
     @State private var dropGapIndex: Int? = nil
     @State private var rowHeights: [Int: CGFloat] = [:]
@@ -11,6 +11,10 @@ struct SieveScriptView: View {
     
     var tokens: [RowToken] { viewModel.rowTokens }
     var indents: [Int] { viewModel.indentation(for: tokens) }
+    
+    init(viewModel: SieveScriptViewModel) {
+        self.viewModel = viewModel
+    }
     
     var filteredIndices: [Int] {
         if let span = draggedRange { return Array(tokens.indices).filter { !span.contains($0) } }
@@ -27,10 +31,6 @@ struct SieveScriptView: View {
         guard let g = dropGapIndex else { return 0 }
         if let index = tokens.indices.first(where: { $0 >= g }) { return CGFloat(indents[index]) * 24 }
         return CGFloat(indents.last ?? 0) * 24
-    }
-
-    init(viewModel: Binding<SieveScriptViewModel>) {
-        self._viewModel = viewModel
     }
 
     var body: some View {
@@ -207,10 +207,10 @@ struct SieveScriptView: View {
         AddFlagCommand(tag: "Tag 2"),
         StopCommand()
     ])
-    SieveScriptView(viewModel: $viewModel)
+    SieveScriptView(viewModel: viewModel)
 }
 
 #Preview("Empty") {
     @Previewable @State var viewModel = SieveScriptViewModel()
-    SieveScriptView(viewModel: $viewModel)
+    SieveScriptView(viewModel: viewModel)
 }

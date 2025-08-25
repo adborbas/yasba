@@ -52,8 +52,15 @@ final class SieveScriptViewModel: ObservableObject {
     func render() -> String {
         return scriptRenderer.render(commands: script)
     }
+    
+    func clear() {
+        applyTokenEdit { tokens in
+            tokens = []
+        }
+    }
 
     private func applyTokenEdit(_ transform: (inout [RowToken]) -> Void) {
+        objectWillChange.send()
         var tokens = mapper.tokens(from: script)
         transform(&tokens)
         self.script = mapper.script(from: tokens)

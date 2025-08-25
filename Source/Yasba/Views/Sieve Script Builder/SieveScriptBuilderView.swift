@@ -7,7 +7,7 @@ import AppKit
 // MARK: - Root
 
 struct SieveScriptBuilderView: View {
-    @State var model: SieveScriptViewModel
+    @StateObject var model: SieveScriptViewModel
     @State private var libraryWidth: CGFloat = 320
     @State private var shouldPresentSheet = false
     @State private var renderedScriptText: String = ""
@@ -18,13 +18,16 @@ struct SieveScriptBuilderView: View {
                 Color.primary.colorInvert()
                     .ignoresSafeArea()
                 
-                Toolbar() {
-                    renderedScriptText = model.render()
-                    shouldPresentSheet = true
-                }
+                Toolbar(
+                    onRender: {
+                        renderedScriptText = model.render()
+                        shouldPresentSheet = true
+                    }, onNew: {
+                        model.clear()
+                    })
                 .ignoresSafeArea()
 
-                SieveScriptView(viewModel: $model)
+                SieveScriptView(viewModel: model)
                     .padding([.leading, .top], 24)
                     .frame(minWidth: 420,
                            maxWidth: .infinity,
@@ -53,23 +56,35 @@ struct SieveScriptBuilderView: View {
 }
 
 private struct Toolbar: View {
-    var onRender: (() -> Void)
+    var onRender: () -> Void
+    var onNew: () -> Void
     
     var body: some View {
-        HStack {
+        HStack(spacing: 32) {
             Spacer()
-            Button {
-                onRender()
-            } label: {
-                Image(systemName: "note.text")
-                    .resizable()
-                    .frame(width: 18, height: 18)
-            }
-            .buttonStyle(.plain)
-
+            ToolbarButton(icon: "document.badge.plus") { onNew() }
+            ToolbarButton(icon: "note.text") { onRender() }
         }
         .padding(.trailing, 24)
         .frame(height: 50)
+    }
+}
+
+private struct ToolbarButton: View {
+    private let size: CGFloat = 22
+    
+    let icon: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button {
+            action()
+        } label: {
+            Image(systemName: icon)
+                .resizable()
+                .frame(width: size, height: size)
+        }
+        .buttonStyle(.plain)
     }
 }
 
