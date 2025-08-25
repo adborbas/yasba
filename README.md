@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/a758630b-d527-4994-9daf-62d0a23bdd4d" alt="256-mac" width="128"/>
+</div>
+
 # Yet Another Sieve Builder App (Yasba)
 
 **Yasba** is a macOS SwiftUI application for visually building [Sieve](https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)) mail filter scripts.
