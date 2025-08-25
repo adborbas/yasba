@@ -19,14 +19,7 @@ struct SieveScriptBuilderView: View {
                 Color.primary.colorInvert()
                     .ignoresSafeArea()
                 
-                Toolbar(
-                    onRender: {
-                        renderedScriptText = model.render()
-                        shouldPresentSheet = true
-                    }, onNew: {
-                        shouldShowClearConfirmation = true
-                    })
-                .ignoresSafeArea()
+                toolbar
 
                 SieveScriptView(viewModel: model)
                     .padding([.leading, .top], 24)
@@ -62,17 +55,35 @@ struct SieveScriptBuilderView: View {
             Text("This will remove all commands from the script. This action cannot be undone.")
         }
     }
+    
+    @ViewBuilder
+    private var toolbar: some View {
+        Toolbar {
+            if !model.rowTokens.isEmpty {
+                ToolbarButton(icon: "trash") {
+                    shouldShowClearConfirmation = true
+                }
+            }
+            ToolbarButton(icon: "note.text") {
+                renderedScriptText = model.render()
+                shouldPresentSheet = true
+            }
+        }
+        .ignoresSafeArea()
+    }
 }
 
-private struct Toolbar: View {
-    var onRender: () -> Void
-    var onNew: () -> Void
+private struct Toolbar<Content: View>: View {
+    var content: Content
+    
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
     
     var body: some View {
         HStack(spacing: 32) {
             Spacer()
-            ToolbarButton(icon: "document.badge.plus") { onNew() }
-            ToolbarButton(icon: "note.text") { onRender() }
+            content
         }
         .padding(.trailing, 24)
         .frame(height: 50)
