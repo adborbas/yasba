@@ -24,6 +24,10 @@ final class IfCommand: SieveContainerCommand, SieveCommandValueEquatable {
     var tests: [SieveTest]
     var thenChildren: [AnySieveCommand]
     var elseChildren: [AnySieveCommand]
+    
+    var requirements: [String]  {
+        return (thenChildren + elseChildren).flatMap { $0.requirements }
+    }
 
     init(
         quantifier: IfQuantifier = .any,
@@ -36,9 +40,6 @@ final class IfCommand: SieveContainerCommand, SieveCommandValueEquatable {
         self.thenChildren = thenChildren
         self.elseChildren = elseChildren
     }
-
-    var displayName: String { "If" }
-    var isContainer: Bool { true }
 
     func isSemanticallyEqual(to other: AnySieveCommand) -> Bool {
         guard let other = other as? IfCommand else { return false }

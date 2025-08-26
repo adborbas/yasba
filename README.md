@@ -14,7 +14,7 @@ It provides a user-friendly editor for creating complex email filtering rules wi
 - 📚 Palette of commands, including core Sieve and provider-specific extensions
 - 🖱️ Drag & drop support for reordering and nesting commands
 - 🔄 Rendering of the visual script into valid Sieve source code
-- 🛠️ Extensible architecture – easily add new commands (see [How To Add New Command](Source/Sieve%20Commands/HowToAddNewCommand.md))  
+- 🛠️ Extensible architecture – easily add new commands (see [How To Add New Command](Source/Yasba/Sieve%20Commands/HowToAddNewCommand.md))  
 
 ## Architecture Overview
 
@@ -40,7 +40,7 @@ Yasba is designed with extensibility in mind. The main architectural components 
 
 Contributions are welcome!  
 
-Check out [How To Add New Command](HowToAddNewCommand.md) to learn how to extend Yasba with new Sieve commands.
+Check out [How To Add New Command](Source/Yasba/Sieve%20Commands/HowToAddNewCommand.md) to learn how to extend Yasba with new Sieve commands.
 
 ## License
 

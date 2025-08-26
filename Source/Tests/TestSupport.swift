@@ -4,8 +4,9 @@ import Testing
 
 /// Minimal non-container command used across tests. Identity is stable via `id`.
 final class DummyLeaf: SieveCommand, SieveCommandValueEquatable {
+    static let requirement: String = "requirement"
+    
     let id: UUID
-    var isContainer: Bool { false }
     let text: String
 
     init(_ text: String, id: UUID = UUID()) {
@@ -13,7 +14,7 @@ final class DummyLeaf: SieveCommand, SieveCommandValueEquatable {
         self.id = id
     }
 
-    var requirements: [String] { [] }
+    var requirements: [String] { [DummyLeaf.requirement] }
 
     func isSemanticallyEqual(to other: any SieveCommand) -> Bool {
         guard let other = other as? DummyLeaf else { return false }

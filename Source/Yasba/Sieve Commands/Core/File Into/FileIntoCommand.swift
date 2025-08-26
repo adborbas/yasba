@@ -6,10 +6,8 @@ import Foundation
 @Observable
 final class FileIntoCommand: SieveCommand, SieveCommandValueEquatable{
     let id = UUID()
-    
     var mailbox: String
-    var isContainer: Bool { false }
-    var requirement: String = "fileinto"
+    let requirements = ["fileinto"]
     
     init(mailbox: String) {
         self.mailbox = mailbox
