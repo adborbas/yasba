@@ -25,4 +25,11 @@ enum RowToken: Identifiable, Equatable {
         default: return true
         }
     }
+    
+    var canDrag: Bool {
+        switch self {
+        case .elseMarker, .endIf: return false
+        default: return true
+        }
+    }
 }
