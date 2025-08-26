@@ -5,7 +5,6 @@ import Foundation
  */
 protocol SieveCommand: AnyObject, Identifiable {
     var id: UUID { get }
-    var isContainer: Bool { get }
     
     var requirements: [String] { get }
 }

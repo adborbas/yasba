@@ -4,9 +4,7 @@ import Foundation
 @Observable
 final class AddFlagCommand: SieveCommand, SieveCommandValueEquatable {
     let id = UUID()
-    
     var tag: String
-    var isContainer: Bool { false }
     let requirements = ["imap4flags"]
     
     init(tag: String) {

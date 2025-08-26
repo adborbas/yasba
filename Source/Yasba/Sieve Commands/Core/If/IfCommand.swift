@@ -42,7 +42,6 @@ final class IfCommand: SieveContainerCommand, SieveCommandValueEquatable {
     }
 
     var displayName: String { "If" }
-    var isContainer: Bool { true }
 
     func isSemanticallyEqual(to other: AnySieveCommand) -> Bool {
         guard let other = other as? IfCommand else { return false }

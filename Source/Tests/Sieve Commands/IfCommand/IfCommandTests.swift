@@ -2,7 +2,7 @@ import Testing
 @testable import Yasba
 
 struct IfCommandTests {
-    @Test func example() throws {
+    @Test func childernRequirementsArePassed() throws {
         let command = IfCommand(
             quantifier: .any,
             tests: [ ],

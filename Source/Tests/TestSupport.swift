@@ -7,7 +7,6 @@ final class DummyLeaf: SieveCommand, SieveCommandValueEquatable {
     static let requirement: String = "requirement"
     
     let id: UUID
-    var isContainer: Bool { false }
     let text: String
 
     init(_ text: String, id: UUID = UUID()) {

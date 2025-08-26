@@ -3,9 +3,7 @@ import Foundation
 @Observable
 final class ProtonExpireCommand: SieveCommand, SieveCommandValueEquatable {
     let id = UUID()
-    
     var days: Int
-    var isContainer: Bool { false }
     let requirements = ["vnd.proton.expire"]
     
     init(days: Int) {
