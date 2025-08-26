@@ -156,11 +156,13 @@ struct SieveScriptView: View {
         .padding(.leading, CGFloat(indents[index]) * 24)
         .contentShape(Rectangle())
         .onHover { hovering in hoveredRow = hovering ? index : nil }
-        .onDrag {
-            let span = viewModel.dragSpan(at: index, in: tokens)
-            draggedRange = span
-            dropGapIndex = span.lowerBound
-            return NSItemProvider(object: token.id.uuidString as NSString)
+        .applyIf(token.canDrag) { view in
+            view.onDrag {
+                let span = viewModel.dragSpan(at: index, in: tokens)
+                draggedRange = span
+                dropGapIndex = span.lowerBound
+                return NSItemProvider(object: token.id.uuidString as NSString)
+            }
         }
         .onDrop(of: [UTType.utf8PlainText],
                 delegate: UnifiedDropDelegate(target: .row(index),
