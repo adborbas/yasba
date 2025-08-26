@@ -18,4 +18,11 @@ enum RowToken: Identifiable, Equatable {
     static func == (lhs: RowToken, rhs: RowToken) -> Bool {
         lhs.id == rhs.id
     }
+    
+    var canRemove: Bool {
+        switch self {
+        case .elseMarker, .endIf: return false
+        default: return true
+        }
+    }
 }

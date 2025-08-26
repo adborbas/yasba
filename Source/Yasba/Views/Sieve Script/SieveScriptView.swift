@@ -22,14 +22,14 @@ struct SieveScriptView: View {
     }
 
     var placeholderInsertPosition: Int? {
-        guard let g = dropGapIndex else { return nil }
-        if let pos = filteredIndices.firstIndex(where: { $0 >= g }) { return pos }
+        guard let gap = dropGapIndex else { return nil }
+        if let pos = filteredIndices.firstIndex(where: { $0 >= gap }) { return pos }
         return filteredIndices.count
     }
 
     var placeholderLeading: CGFloat {
-        guard let g = dropGapIndex else { return 0 }
-        if let index = tokens.indices.first(where: { $0 >= g }) { return CGFloat(indents[index]) * 24 }
+        guard let gap = dropGapIndex else { return 0 }
+        if let index = tokens.indices.first(where: { $0 >= gap }) { return CGFloat(indents[index]) * 24 }
         return CGFloat(indents.last ?? 0) * 24
     }
 
@@ -139,7 +139,7 @@ struct SieveScriptView: View {
                 RowTokenToViewMapper.row(for: token)
                 Spacer(minLength: 0)
             }
-            if hoveredRow == index {
+            if hoveredRow == index && token.canRemove {
                 Button {
                     viewModel.remove(at: index)
                     hoveredRow = nil
