@@ -132,7 +132,6 @@ fileprivate enum TestTemplate: String, CaseIterable, Identifiable {
     case address
     case envelope
     case size
-    case body
     case exists
     
     var id: String { rawValue }
@@ -143,7 +142,6 @@ fileprivate enum TestTemplate: String, CaseIterable, Identifiable {
         case .address:  return "Address"
         case .envelope: return "Envelope"
         case .size:     return "Size"
-        case .body:     return "Body"
         case .exists:   return "Exists"
         }
     }
@@ -158,8 +156,6 @@ fileprivate enum TestTemplate: String, CaseIterable, Identifiable {
             return .envelope(part: .all, names: ["from"], match: .contains, keys: [""])
         case .size:
             return .size(.over, bytes: 1024)
-        case .body:
-            return .exists(["Subject"])
         case .exists:
             return .exists(["Subject"])
         }
