@@ -11,7 +11,7 @@ enum RowTokenToViewMapper {
         case .elseMarker:
             TextRowView(icon: "arrow.triangle.branch", title: "Else")
         case .endIf:
-            EmptyView()
+            TextRowView(icon: "arrow.triangle.branch", title: "Endif")
         case .leaf(let command):
             registry.makeView(for: command)
         }

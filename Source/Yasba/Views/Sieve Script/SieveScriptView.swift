@@ -112,8 +112,6 @@ struct SieveScriptView: View {
         }
         if let range = draggedRange, range.contains(index) {
             EmptyView()
-        } else if case .endIf = token {
-            EmptyView()
         } else {
             tokenRow(index: index, token: token)
         }
