@@ -24,6 +24,10 @@ final class IfCommand: SieveContainerCommand, SieveCommandValueEquatable {
     var tests: [SieveTest]
     var thenChildren: [AnySieveCommand]
     var elseChildren: [AnySieveCommand]
+    
+    var requirements: [String]  {
+        return (thenChildren + elseChildren).flatMap { $0.requirements }
+    }
 
     init(
         quantifier: IfQuantifier = .any,
