@@ -6,7 +6,7 @@ final class ProtonExpireCommand: SieveCommand, SieveCommandValueEquatable {
     
     var days: Int
     var isContainer: Bool { false }
-    let requirements = ["imap4flags"]
+    let requirements = ["vnd.proton.expire"]
     
     init(days: Int) {
         self.days = days
